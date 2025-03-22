@@ -126,18 +126,7 @@ function Board:draw()
     self.cursor:draw()
 
     for k=1, #self.explosions do
-        if self.explosions[k].type == 4 then
-            Explosion:setColor(255,0,255)
-        elseif self.explosions[k].type == 5 then
-            Explosion:setColor(0,255,0)
-        elseif self.explosions[k].type == 6 then
-            Explosion:setColor(255,255,255)
-        elseif self.explosions[k].type == 7 then
-            Explosion:setColor(255,0,0)
-        elseif self.explosions[k].type == 8 then
-            Explosion:setColor(0,0,255)
-        end
-        --self.explosions.setColor()
+        --self.explosions:setColor()
         self.explosions[k]:draw()
     end
 end
@@ -259,8 +248,9 @@ function Board:matches()
         for k, match in pairs(horMatches) do
             score = score + (2^match.size * 10) * womboCombo 
             for j=0, match.size-1 do
+                local type = self.tiles[match.row][match.col+j].type
                 self.tiles[match.row][match.col+j] = nil
-                self:createExplosion(match.row,match.col+j)
+                self:createExplosion(match.row,match.col+j,type)
                 womboCombo = womboCombo +1
             end -- end for j 
         end -- end for each horMatch
@@ -268,8 +258,9 @@ function Board:matches()
         for k, match in pairs(verMatches) do
             score = score + (2^match.size * 10) * womboCombo   
             for i=0, match.size-1 do
+                local type = self.tiles[match.row+i][match.col].type
                 self.tiles[match.row+i][match.col] = nil
-                self:createExplosion(match.row+i,match.col)
+                self:createExplosion(match.row+i,match.col,type)
                 womboCombo = womboCombo +1
             end -- end for i 
         end -- end for each verMatch
@@ -286,22 +277,24 @@ function Board:matches()
     end -- end if (has matches)
 end
 
-function Board:createExplosion(row,col)
+function Board:createExplosion(row,col,type)
     local exp = Explosion() --LOOK AT THIS IMPORTANT 131
+    if type == 4 then
+        exp:setColor(1,1,0)
+    elseif type == 5 then
+        exp:setColor(0,0,1)
+    elseif type == 6 then
+        exp:setColor(1,1,1)
+    elseif type == 7 then
+        exp:setColor(1,0,0)
+    elseif type == 8 then
+        exp:setColor(0,1,0)
+    end
     
-    --if self.tiles[row-1][col-1].type == 4 then
-    --    exp.setColor(0,0.2,0)
-    --elseif self.tiles[row-1][col-1].type == 5 then
-    --    exp.setColor(0,0.2,0)
-    --elseif self.tiles[row-1][col-1].type == 6 then
-    --    exp.setColor(0,0.2,0)
-    --elseif self.tiles[row-1][col-1].type == 7 then
-    --    exp.setColor(0,0.2,0)
-    --elseif self.tiles[row-1][col-1].type == 8 then
-    --    exp.setColor(0,0.2,0)
-    --end
+
     exp:trigger(self.x+(col-1)*Board.TILESIZE+Board.TILESIZE/2,
                self.y+(row-1)*Board.TILESIZE+Board.TILESIZE/2)  
+    Tween.new(1,"Wombo Combo",)
     table.insert(self.explosions, exp) -- add exp to our array
 end
 
