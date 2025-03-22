@@ -126,6 +126,18 @@ function Board:draw()
     self.cursor:draw()
 
     for k=1, #self.explosions do
+        if self.explosions[k].type == 4 then
+            Explosion:setColor(255,0,255)
+        elseif self.explosions[k].type == 5 then
+            Explosion:setColor(0,255,0)
+        elseif self.explosions[k].type == 6 then
+            Explosion:setColor(255,255,255)
+        elseif self.explosions[k].type == 7 then
+            Explosion:setColor(255,0,0)
+        elseif self.explosions[k].type == 8 then
+            Explosion:setColor(0,0,255)
+        end
+        --self.explosions.setColor()
         self.explosions[k]:draw()
     end
 end
@@ -240,21 +252,25 @@ function Board:matches()
     local horMatches = self:findHorizontalMatches()
     local verMatches = self:findVerticalMatches() 
     local score = 0
+    local womboCombo = 1
+    
 
     if #horMatches > 0 or #verMatches > 0 then -- if there are matches
         for k, match in pairs(horMatches) do
-            score = score + 2^match.size * 10   
+            score = score + (2^match.size * 10) * womboCombo 
             for j=0, match.size-1 do
                 self.tiles[match.row][match.col+j] = nil
                 self:createExplosion(match.row,match.col+j)
+                womboCombo = womboCombo +1
             end -- end for j 
         end -- end for each horMatch
 
         for k, match in pairs(verMatches) do
-            score = score + 2^match.size * 10   
+            score = score + (2^match.size * 10) * womboCombo   
             for i=0, match.size-1 do
                 self.tiles[match.row+i][match.col] = nil
                 self:createExplosion(match.row+i,match.col)
+                womboCombo = womboCombo +1
             end -- end for i 
         end -- end for each verMatch
 
@@ -271,7 +287,19 @@ function Board:matches()
 end
 
 function Board:createExplosion(row,col)
-    local exp = Explosion()
+    local exp = Explosion() --LOOK AT THIS IMPORTANT 131
+    
+    --if self.tiles[row-1][col-1].type == 4 then
+    --    exp.setColor(0,0.2,0)
+    --elseif self.tiles[row-1][col-1].type == 5 then
+    --    exp.setColor(0,0.2,0)
+    --elseif self.tiles[row-1][col-1].type == 6 then
+    --    exp.setColor(0,0.2,0)
+    --elseif self.tiles[row-1][col-1].type == 7 then
+    --    exp.setColor(0,0.2,0)
+    --elseif self.tiles[row-1][col-1].type == 8 then
+    --    exp.setColor(0,0.2,0)
+    --end
     exp:trigger(self.x+(col-1)*Board.TILESIZE+Board.TILESIZE/2,
                self.y+(row-1)*Board.TILESIZE+Board.TILESIZE/2)  
     table.insert(self.explosions, exp) -- add exp to our array

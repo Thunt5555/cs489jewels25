@@ -23,6 +23,7 @@ function Explosion:trigger(x,y)
     if x and y then -- if x & y not nil, set then now
         self.particleSystem:setPosition(x, y)
     end
+    
     self.particleSystem:emit(30) -- Emit 30 particles
 end
 

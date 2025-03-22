@@ -41,6 +41,14 @@ function love.keypressed(key)
     elseif key == "F2" or key == "tab" then
         debugFlag = not debugFlag
     elseif key == "return" and gameState=="start" then
+        stats.level = 1
+        stats.elapsedSecs = 0
+        stats.totalScore = 0
+        gameState = "play"
+    elseif key == "return" and gameState == "over" then
+        stats.level = 1
+        stats.elapsedSecs = 0
+        stats.totalScore = 0
         gameState = "play"
     end
 end
@@ -64,7 +72,10 @@ function love.update(dt)
     bg1:update(dt)
     bg2:update(dt)
     testexp:update(dt)
-    stats:update(dt)
+    if gameState == "play" then
+        stats:update(dt)
+    end
+    
 
     if gameState == "start" then
 
@@ -72,8 +83,14 @@ function love.update(dt)
         gem2:update(dt)
     elseif gameState == "play" then
         board:update(dt)
+        if stats.elapsedSecs > stats.maxSecs then
+            gameState = "over"
+        end
 
     elseif gameState == "over" then
+        if love.keyboard.keypressed == "return" then
+            love.keypressed("return")
+        end
         -- for later, if we needed
     end
 end
@@ -129,4 +146,6 @@ function drawGameOverState()
         gameWidth,"center")
     love.graphics.printf("Press Enter to Play or Escape to exit",
         0,90, gameWidth,"center")
+    love.graphics.printf("Level "..tostring(stats.level), 0,130,gameWidth,"center")
+    love.graphics.printf("Score "..tostring(stats.totalScore), 0,170,gameWidth,"center")
 end
