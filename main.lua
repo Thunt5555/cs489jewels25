@@ -1,3 +1,5 @@
+-- Authors: Tim Hunt and Victoria Shelton
+
 local Globals = require "src.Globals"
 local Push = require "libs.push"
 local Background = require "src.game.Background"

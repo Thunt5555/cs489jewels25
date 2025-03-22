@@ -211,6 +211,7 @@ function Board:findHorizontalMatches()
     for i = 1, Board.MAXROWS do 
         local same = 1
         for j = 2, Board.MAXCOLS do
+
             if self.tiles[i][j].type == self.tiles[i][j-1].type then
                 same = same +1
             elseif same > 2 then -- match-3+
@@ -255,22 +256,61 @@ function Board:findVerticalMatches()
     return matches
 end
 
+-- Check if coin is near
+-- Does not work
+-- Matricies are not kind to me
+function Board:checkCoin(row,col)
+    local coinFound = false
 
+    -- Check if there is a coin adjacent    
+    if row+1 <= Board.MAXROWS-1 then
+        if self.tiles[row+1][col].type == 1 then
+            coinFound = true
+        end
+    end
+    if row-1 >= 1 then
+        if self.tiles[row-1][col].type == 1 then
+            coinFound = true
+        end
+    end
+    if col+1 <= Board.MAXCOLS-1 then
+        if self.tiles[row][col+1].type == 1 then
+            coinFound = true
+        end
+    end
+    if col-1 >= 1 then
+        if self.tiles[row][col-1].type == 1 then
+            coinFound = true
+        end
+    end
+
+    if coinFound then
+        -- If there is a coin, make it explode and add to score
+        self.tiles[self.coinPosX][self.coinPosY] = nil
+        self:createExplosion(self.coinPosX,self.coinPosY,1)
+        self.stats:addScore(10000)
+        coinFound = false
+    end
+end
 
 function Board:matches()
     local horMatches = self:findHorizontalMatches()
-    local verMatches = self:findVerticalMatches() 
+    local verMatches = self:findVerticalMatches()
     local score = 0
     local womboCombo = 1
     
 
     if #horMatches > 0 or #verMatches > 0 then -- if there are matches
+
+        -- Add to combos
         for k, match in pairs(horMatches) do
             score = score + (2^match.size * 10) * womboCombo 
             for j=0, match.size-1 do
+
                 local type = self.tiles[match.row][match.col+j].type
                 self.tiles[match.row][match.col+j] = nil
                 self:createExplosion(match.row,match.col+j,type)
+                --self:checkCoin(match.row,match.col+j)
                 womboCombo = womboCombo +1
             end -- end for j 
         end -- end for each horMatch
@@ -281,6 +321,7 @@ function Board:matches()
                 local type = self.tiles[match.row+i][match.col].type
                 self.tiles[match.row+i][match.col] = nil
                 self:createExplosion(match.row+i,match.col,type)
+                --self:checkCoin(match.row+i,match.col)
                 womboCombo = womboCombo +1
             end -- end for i 
         end -- end for each verMatch
@@ -313,8 +354,8 @@ function Board:createExplosion(row,col,type)
     
 
     exp:trigger(self.x+(col-1)*Board.TILESIZE+Board.TILESIZE/2,
-               self.y+(row-1)*Board.TILESIZE+Board.TILESIZE/2)  
-    Tween.new(1,"Wombo Combo",)
+        self.y+(row-1)*Board.TILESIZE+Board.TILESIZE/2)
+    --Tween.new(1,"Wombo Combo")
     table.insert(self.explosions, exp) -- add exp to our array
 end
 
