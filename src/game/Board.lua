@@ -11,6 +11,7 @@ local Board = Class{}
 Board.MAXROWS = 8
 Board.MAXCOLS = 8
 Board.TILESIZE = Gem.SIZE*Gem.SCALE 
+
 function Board:init(x,y, stats)
     self.x = x
     self.y = y
@@ -18,9 +19,18 @@ function Board:init(x,y, stats)
     self.cursor = Cursor(self.x,self.y,Board.TILESIZE+1)
 
     self.tiles = Matrix:new(Board.MAXROWS,Board.MAXCOLS)
+
+    -- Set random coin position
+    self.coinPosX = math.random(1,Board.MAXROWS)
+    self.coinPosY = math.random(1,Board.MAXCOLS)
     for i=1, Board.MAXROWS do
         for j=1, Board.MAXCOLS do
-            self.tiles[i][j] = self:createGem(i,j)
+            -- Place gems, and coin randomly
+            if i == self.coinPosX and j == self.coinPosY then
+                self.tiles[i][j] = self:createCoin(i,j)
+            else
+                self.tiles[i][j] = self:createGem(i,j)
+            end
         end -- end for j
     end -- end for i
     self:fixInitialMatrix()
@@ -29,12 +39,20 @@ function Board:init(x,y, stats)
     self.tweenGem2 = nil
     self.explosions = {}
     self.arrayFallTweens = {}
+
 end
 
 function Board:createGem(row,col)
     return Gem(self.x+(col-1)*Board.TILESIZE,
-               self.y+(row-1)*Board.TILESIZE,
-               math.random(4,8) )
+            self.y+(row-1)*Board.TILESIZE,
+            math.random(4,8) )
+end
+
+-- Makes a coin gem
+function Board:createCoin(row,col)
+    return Gem(self.x+(col-1)*Board.TILESIZE,
+            self.y+(row-1)*Board.TILESIZE, 
+            1)
 end
 
 function Board:fixInitialMatrix()
@@ -236,6 +254,8 @@ function Board:findVerticalMatches()
 
     return matches
 end
+
+
 
 function Board:matches()
     local horMatches = self:findHorizontalMatches()
