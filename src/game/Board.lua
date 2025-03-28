@@ -211,8 +211,8 @@ function Board:findHorizontalMatches()
     for i = 1, Board.MAXROWS do 
         local same = 1
         for j = 2, Board.MAXCOLS do
-
-            if self.tiles[i][j].type == self.tiles[i][j-1].type then
+            --fixing Coin shenanigans
+            if self.tiles[i][j].type == self.tiles[i][j-1].type or self.tiles[i][j-1].type == 1 then
                 same = same +1
             elseif same > 2 then -- match-3+
                 table.insert(matches,{row=i, col=(j-same), size=same})
@@ -237,7 +237,7 @@ function Board:findVerticalMatches()
     for j = 1, Board.MAXCOLS do 
         local same = 1
         for i = 2, Board.MAXROWS do
-            if self.tiles[i][j].type == self.tiles[i-1][j].type then
+            if self.tiles[i][j].type == self.tiles[i-1][j].type or self.tiles[i-1][j].type == 1 then
                 same = same +1
             elseif same > 2 then -- match-3+
                 table.insert(matches,{row=(i-same), col=j, size=same})
