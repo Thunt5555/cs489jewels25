@@ -6,11 +6,12 @@ local Gem = require "src.game.Gem"
 local Cursor = require "src.game.Cursor"
 local Explosion = require "src.game.Explosion"
 local Sounds = require "src.game.SoundEffects"
+local ComboText = require "src.game.ComboText"
 
 local Board = Class{}
 Board.MAXROWS = 8
 Board.MAXCOLS = 8
-Board.TILESIZE = Gem.SIZE*Gem.SCALE 
+Board.TILESIZE = Gem.SIZE*Gem.SCALE
 
 function Board:init(x,y, stats)
     self.x = x
@@ -257,8 +258,6 @@ function Board:findVerticalMatches()
 end
 
 -- Check if coin is near
--- Does not work
--- Matricies are not kind to me
 function Board:checkCoin(row,col)
     local coinFound = false
 
@@ -293,6 +292,8 @@ function Board:checkCoin(row,col)
     end
 end
 
+
+
 function Board:matches()
     local horMatches = self:findHorizontalMatches()
     local verMatches = self:findVerticalMatches()
@@ -312,6 +313,9 @@ function Board:matches()
                 self:createExplosion(match.row,match.col+j,type)
                 --self:checkCoin(match.row,match.col+j)
                 womboCombo = womboCombo +1
+                -- Combo text pops up, does not work tho
+                local combotext = ComboText()
+                combotext:draw()
             end -- end for j 
         end -- end for each horMatch
 
@@ -323,6 +327,9 @@ function Board:matches()
                 self:createExplosion(match.row+i,match.col,type)
                 --self:checkCoin(match.row+i,match.col)
                 womboCombo = womboCombo +1
+                -- Combo text pops up, nope does not work
+                local combotext = ComboText()
+                combotext:draw()
             end -- end for i 
         end -- end for each verMatch
 
